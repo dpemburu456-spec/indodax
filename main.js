@@ -3,11 +3,15 @@ const daftarKoin = ['btc_idr', 'eth_idr', 'doge_idr', 'sol_idr', 'xrp_idr', 'ltc
 async function updateUI() {
     const listDiv = document.getElementById('crypto-list');
     let html = '';
-    
+
     for (const pair of daftarKoin) {
         try {
-            // Menggunakan corsproxy.io sebagai jembatan
-            const response = await fetch(`https://corsproxy.io/?https://indodax.com/api/ticker/${pair}`);
+            // Menggunakan teknik tanpa proxy namun dengan header yang lebih sopan
+            const response = await fetch(`https://indodax.com/api/ticker/${pair}`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: { 'Accept': 'application/json' }
+            });
             const json = await response.json();
             const harga = parseInt(json.ticker.last);
             const nama = pair.split('_')[0].toUpperCase();
@@ -16,11 +20,11 @@ async function updateUI() {
                         <span>${nama}</span> <span>Rp ${harga.toLocaleString('id-ID')}</span>
                      </div>`;
         } catch (e) {
-            html += `<div style="padding: 10px; color: red;">Error: ${pair}</div>`;
+            html += `<div style="padding: 10px; color: red;">Akses Ditolak: ${pair}</div>`;
         }
     }
     listDiv.innerHTML = html;
 }
 
 updateUI();
-setInterval(updateUI, 15000); // Saya naikkan jadi 15 detik agar tidak dianggap spam
+setInterval(updateUI, 15000);
