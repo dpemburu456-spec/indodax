@@ -2,13 +2,15 @@ async function fetchIndodax() {
     const listDiv = document.getElementById('crypto-list');
     
     try {
-        // Mengambil data ticker BTC/IDR dari API Publik Indodax
-        const response = await fetch('https://indodax.com/api/btc_idr/ticker');
+        // Kita gunakan proxy agar browser mengizinkan akses ke API Indodax
+        const proxyUrl = 'https://corsproxy.io/?';
+        const targetUrl = 'https://indodax.com/api/btc_idr/ticker';
+        
+        const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
         const data = await response.json();
         
         const price = data.ticker.last;
         
-        // Menampilkan harga ke HTML
         listDiv.innerHTML = `
             <div class="row">
                 <span>Bitcoin (BTC)</span>
@@ -23,8 +25,5 @@ async function fetchIndodax() {
     }
 }
 
-// Jalankan saat halaman dimuat
 fetchIndodax();
-
-// Refresh harga otomatis setiap 5 detik
 setInterval(fetchIndodax, 5000);
