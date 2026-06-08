@@ -1,0 +1,4 @@
+window.HELAYO_THEME = (function() {
+    // (Isi dengan fungsi initTheme, applyTheme, toggleTheme)
+    return { ... };
+})();
