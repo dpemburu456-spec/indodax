@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>HELAYO - Radar Scanner Binance</title>
+    <!-- Tailwind CSS + Konfigurasi -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0F172A',
+                        darker: '#0A0E1B',
+                        primary: '#2563EB',
+                        secondary: '#38BDF8',
+                        accent: '#34D399',
+                        danger: '#EF4444',
+                        success: '#10B981',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome 4 -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-dark min-h-screen font-inter text-gray-100">
+    <!-- Header / Logo -->
+    <header class="py-8 px-6">
+        <div class="container mx-auto flex flex-col items-center">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="text-primary text-4xl">
+                    <i class="fa fa-line-chart"></i>
+                </div>
+                <h1 class="text-5xl font-bold text-gradient">HELAYO</h1>
+            </div>
+            <p class="text-gray-400 text-xl">Radar Scanner Binance</p>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <main class="container mx-auto px-4 pb-16">
+        <div class="max-w-md mx-auto bg-darker rounded-[2.5rem] p-6 border-gradient card-glow">
+            <!-- Top Navigation -->
+            <div class="flex justify-between items-center mb-6">
+                <button class="text-gray-300 text-2xl hover:text-primary transition-colors">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <div class="flex gap-4">
+                    <button class="text-gray-300 text-xl hover:text-primary transition-colors">
+                        <i class="fa fa-search"></i>
+                    </button>
+                    <button class="text-gray-300 text-xl hover:text-primary transition-colors">
+                        <i class="fa fa-user-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- App Title -->
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                    <i class="fa fa-line-chart"></i>
+                </div>
+                <h2 class="text-3xl font-bold">HELAYO</h2>
+            </div>
+
+            <!-- Fear and Greed Index (Dinamis) -->
+            <div class="mb-6">
+                <p class="text-gray-400 mb-2">Fear and Greed Index</p>
+                <div id="fear-greed-container" class="flex items-center justify-between bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                        <span class="text-lg font-medium">Memuat...</span>
+                    </div>
+                    <span class="text-xl font-bold">--</span>
+                </div>
+            </div>
+
+            <!-- Daftar Aset (Dinamis dari API) -->
+            <div class="space-y-4 mb-8">
+                <h3 class="text-gray-300 font-semibold px-2">🔥 Pasar Crypto</h3>
+                <div id="assets-container" class="space-y-4">
+                    <!-- Loading state -->
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fa fa-spinner fa-spin text-2xl"></i>
+                        <p class="mt-2">Memuat data pasar...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="flex bg-slate-800/50 rounded-full p-1 mb-8">
+                <button data-tab="home" class="tab-btn flex-1 py-2 rounded-full text-gray-300 hover:text-white transition-colors">Home</button>
+                <button data-tab="markets" class="tab-btn flex-1 py-2 rounded-full text-gray-300 hover:text-white transition-colors">Markets</button>
+                <button data-tab="portfolio" class="tab-btn flex-1 py-2 rounded-full text-gray-300 hover:text-white transition-colors">Portfolio</button>
+                <button data-tab="settings" class="tab-btn flex-1 py-2 rounded-full text-gray-300 hover:text-white transition-colors">Settings</button>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="flex justify-between items-center px-4">
+                <button class="text-gray-400 text-2xl hover:text-primary transition-colors">
+                    <i class="fa fa-home"></i>
+                </button>
+                <button class="text-gray-400 text-2xl hover:text-primary transition-colors">
+                    <i class="fa fa-line-chart"></i>
+                </button>
+                <button id="refreshBtn" class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-3xl shadow-lg shadow-primary/30 hover:bg-primary/80 transition-all">
+                    <i class="fa fa-refresh"></i>
+                </button>
+                <button class="text-gray-400 text-2xl hover:text-primary transition-colors">
+                    <i class="fa fa-exchange"></i>
+                </button>
+                <button class="text-gray-400 text-2xl hover:text-primary transition-colors">
+                    <i class="fa fa-user"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-6 text-center text-gray-500 text-sm">
+        <p>© 2026 HELAYO Radar Scanner Binance | Data Real-time</p>
+    </footer>
+
+    <!-- JavaScript Modules -->
+    <script src="api.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
