@@ -3,9 +3,9 @@ const daftarKoin = ['btc_idr', 'eth_idr', 'doge_idr', 'sol_idr', 'xrp_idr', 'ltc
 async function updateUI() {
     const listDiv = document.getElementById('crypto-list');
     
-    // Tampilkan pesan loading jika kosong
-    if (listDiv.innerHTML === '') {
-        listDiv.innerHTML = '<div style="color: #888; text-align: center;">Memuat data...</div>';
+    // BAGIAN INI UNTUK MENGHAPUS TULISAN "MEMUAT DATA"
+    if (listDiv.innerHTML.includes('Memuat data')) {
+        listDiv.innerHTML = '';
     }
 
     for (const pair of daftarKoin) {
@@ -14,7 +14,6 @@ async function updateUI() {
             const harga = parseInt(data.last);
             const nama = pair.split('_')[0].toUpperCase();
             
-            // Cari elemen koinnya, kalau belum ada, buat baru
             let row = document.getElementById('row-' + pair);
             if (!row) {
                 row = document.createElement('div');
@@ -23,7 +22,6 @@ async function updateUI() {
                 listDiv.appendChild(row);
             }
             
-            // Cek harga lama untuk warna
             const hargaLama = sessionStorage.getItem('price-' + pair);
             let warna = '#fff';
             if (hargaLama) {
@@ -31,18 +29,15 @@ async function updateUI() {
                 if (harga < parseInt(hargaLama)) warna = '#cf304a';
             }
             
-            // Update isi baris
             row.innerHTML = `
                 <span style="color: #fff; font-weight: bold;">${nama}</span>
                 <span style="color: ${warna}; font-weight: bold;">Rp ${harga.toLocaleString('id-ID')}</span>
             `;
             
-            // Simpan harga baru
             sessionStorage.setItem('price-' + pair, harga);
         }
     }
 }
 
-// Jalankan
 updateUI();
 setInterval(updateUI, 7000);
