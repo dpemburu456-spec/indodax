@@ -1,3 +1,15 @@
+async function updateUI() {
+    const listDiv = document.getElementById('crypto-list');
+    // Jika masih ada tulisan memuat, hapus dulu
+    if (listDiv.innerHTML.includes('Memuat data')) {
+        listDiv.innerHTML = '';
+    }
+    
+    // ... (sisanya kode yang sebelumnya)
+}
+
+
+
 const daftarKoin = ['btc_idr', 'eth_idr', 'doge_idr', 'sol_idr', 'xrp_idr', 'ltc_idr', 'arb_idr'];
 
 async function updateUI() {
