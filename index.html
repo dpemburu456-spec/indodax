@@ -4,9 +4,396 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>HELAYO - Crypto Scanner & Signals</title>
+    <!-- Font Awesome 6 (free) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- CSS VARIABLES (Light Mode Default) ---------- */
+        :root {
+            --bg-body: #f4f6fc;
+            --bg-surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #334155;
+            --border-light: #e2e8f0;
+            --border-card: #eef2ff;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.05);
+            --header-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --sidebar-hover: #eef2ff;
+            --sidebar-active-bg: #eef2ff;
+            --sidebar-active-color: #2563eb;
+            --btn-primary: #2563eb;
+            --btn-primary-hover: #1d4ed8;
+            --btn-secondary-bg: #e2e8f0;
+            --btn-secondary-color: #1e293b;
+            --badge-bg: #eef2ff;
+            --scan-results-bg: #f8fafc;
+            --toast-bg: #1e293b;
+            --toast-text: white;
+            --input-border: #cbd5e1;
+            --input-bg: white;
+        }
+
+        /* Dark Mode */
+        body.dark {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e6;
+            --border-light: #334155;
+            --border-card: #334155;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            --header-bg: #1e293b;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --sidebar-active-bg: #2563eb30;
+            --sidebar-active-color: #60a5fa;
+            --btn-primary: #3b82f6;
+            --btn-primary-hover: #2563eb;
+            --btn-secondary-bg: #334155;
+            --btn-secondary-color: #e2e8f0;
+            --badge-bg: #334155;
+            --scan-results-bg: #0f172a;
+            --toast-bg: #0f172a;
+            --toast-text: #e2e8f0;
+            --input-border: #475569;
+            --input-bg: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        /* header */
+        .app-header {
+            background: var(--header-bg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.7rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: var(--sidebar-hover);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            width: 36px;
+            height: 36px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.7rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: var(--sidebar-bg);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+            z-index: 30;
+            transition: left 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-card);
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 25;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 0 12px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            margin: 6px 0;
+            border-radius: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .sidebar-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-item:hover {
+            background: var(--sidebar-hover);
+            color: var(--sidebar-active-color);
+        }
+
+        .sidebar-item.active {
+            background: var(--sidebar-active-bg);
+            color: var(--sidebar-active-color);
+            font-weight: 600;
+        }
+
+        /* main content */
+        .main-content {
+            padding: 28px 24px;
+            transition: margin-left 0.2s;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* dashboard grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border-radius: 28px;
+            padding: 20px 22px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-card);
+            transition: background 0.2s;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--border-card);
+            padding-bottom: 10px;
+        }
+
+        .card-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .badge-icon {
+            background: var(--badge-bg);
+            border-radius: 40px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .coin-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .coin-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-card);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .scan-results {
+            margin-top: 16px;
+            background: var(--scan-results-bg);
+            border-radius: 20px;
+            padding: 12px;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        button {
+            background: var(--btn-primary);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: var(--btn-primary-hover);
+        }
+
+        button.secondary {
+            background: var(--btn-secondary-bg);
+            color: var(--btn-secondary-color);
+        }
+
+        button.small {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            margin-top: 6px;
+            margin-bottom: 12px;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--toast-bg);
+            color: var(--toast-text);
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 40;
+        }
+
+        /* toggle switch untuk dark mode */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 16px 0;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 26px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #94a3b8;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #3b82f6;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .theme-label {
+            font-weight: 600;
+        }
+
+        @media (max-width: 700px) {
+            .main-content {
+                padding: 20px 16px;
+            }
+            .card-header h3 {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -22,33 +409,471 @@
 <div class="sidebar" id="sidebar">
     <div class="sidebar-menu">
         <div class="sidebar-item active" data-nav="beranda"><i class="fas fa-home"></i> Beranda</div>
-        <div class="sidebar-item" data-nav="radar"><i class="fas fa-radar"></i> Setting Radar Scanner</div>
-        <div class="sidebar-item" data-nav="indikator"><i class="fas fa-chart-line"></i> Setting Indikator</div>
-        <div class="sidebar-item" data-nav="candlestick"><i class="fas fa-candlestick-chart"></i> Pola Candlestick</div>
-        <div class="sidebar-item" data-nav="telegram"><i class="fab fa-telegram"></i> Bot Telegram</div>
-        <div class="sidebar-item" data-nav="pengaturan"><i class="fas fa-sliders-h"></i> Pengaturan</div>
+        <div class="sidebar-item" data-nav="radar"><i class="fas fa-radar"></i> Setting Radar Scanner Coin</div>
+        <div class="sidebar-item" data-nav="indikator"><i class="fas fa-chart-line"></i> Setting Indikator (RSI/EMA/MACD)</div>
+        <div class="sidebar-item" data-nav="candlestick"><i class="fas fa-candlestick-chart"></i> Pola Candlestick Bullish</div>
+        <div class="sidebar-item" data-nav="telegram"><i class="fab fa-telegram"></i> Terhubung ke Bot Telegram</div>
+        <div class="sidebar-item" data-nav="pengaturan"><i class="fas fa-sliders-h"></i> Pengaturan Aplikasi</div>
     </div>
 </div>
 
 <div class="main-content" id="mainContent">
+    <!-- Beranda (default) -->
     <div id="berandaView">
         <div class="dashboard-grid">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-trophy"></i> Ranking</h3><span class="badge-icon">Top 10</span></div><div id="rankList" class="coin-list">Memuat...</div></div>
-            <div class="card"><div class="card-header"><h3><i class="fas fa-chart-simple"></i> Fear & Greed</h3></div><div id="fngDisplay" style="font-size: 1.8rem; font-weight: bold;">--</div><div id="fngText">--</div></div>
-            <div class="card"><div class="card-header"><h3><i class="fas fa-globe"></i> Volume 24h</h3></div><div id="globalVolume" style="font-size: 1.7rem; font-weight: 700;">$--</div></div>
-            <div class="card"><div class="card-header"><h3><i class="fas fa-fire"></i> Trending</h3></div><div id="trendingList" class="coin-list">Memuat...</div></div>
-            <div class="card"><div class="card-header"><h3><i class="fas fa-bolt"></i> Pump Signal</h3></div><div><button id="scanNowBtn" style="width:100%;"><i class="fas fa-search"></i> Scan Sekarang</button><div id="pumpResults" class="scan-results">Klik Scan...</div><div style="margin-top:10px;"><span id="autoScanStatus" style="font-size:0.7rem; background:var(--badge-bg); padding:4px 8px; border-radius:20px;">⚙️ Auto-scan: OFF</span></div></div></div>
+            <!-- 1. Ranking 100 coin -->
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-trophy"></i> Ranking 100 Coin</h3><span class="badge-icon">Top 10</span></div>
+                <div id="rankList" class="coin-list">Memuat data...</div>
+            </div>
+            <!-- 2. Index ketakutan & ketamakan -->
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-chart-simple"></i> Fear & Greed Index</h3></div>
+                <div id="fngDisplay" style="font-size: 1.8rem; font-weight: bold;">--</div>
+                <div id="fngText" style="margin-top: 6px;">--</div>
+            </div>
+            <!-- 3. Volume Global -->
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-globe"></i> Volume Global 24h</h3></div>
+                <div id="globalVolume" style="font-size: 1.7rem; font-weight: 700;">$--</div>
+            </div>
+            <!-- 4. Coin trending (coingecko) -->
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-fire"></i> Coin Trending</h3></div>
+                <div id="trendingList" class="coin-list">Memuat...</div>
+            </div>
+            <!-- 5. Scanner koin yang akan pump -->
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-bolt"></i> Scanner Pump Signal</h3></div>
+                <div>
+                    <button id="scanNowBtn" style="width:100%; margin-bottom:12px;"><i class="fas fa-search"></i> Scan Sekarang</button>
+                    <div id="pumpResults" class="scan-results">Klik Scan untuk mendeteksi potensi pump berdasarkan konfigurasi radar & indikator.</div>
+                    <div style="margin-top:10px;"><span id="autoScanStatus" style="font-size:0.7rem; background:var(--badge-bg); padding:4px 8px; border-radius:20px;">⚙️ Auto-scan: OFF</span></div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Panel lain (setting radar, indikator, dll) akan muncul via JS -->
     <div id="dynamicPanel" style="display: none;"></div>
 </div>
 
-<!-- Load Scripts -->
-<script src="js/api.js"></script>
-<script src="js/settings.js"></script>
-<script src="js/theme.js"></script>
-<script src="js/telegram.js"></script>
-<script src="js/scanner.js"></script>
-<script src="js/main.js"></script>
+<script>
+    // ----------------------------- api.js (modul API) ----------------------------
+    window.HELAYO_API = (function() {
+        const COINGECKO_BASE = "https://api.coingecko.com/api/v3";
+        
+        async function fetchTopCoins(limit = 20) {
+            try {
+                const url = `${COINGECKO_BASE}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${limit}&page=1&sparkline=false`;
+                const res = await fetch(url);
+                const data = await res.json();
+                return data.map(c => ({ name: c.name, symbol: c.symbol.toUpperCase(), price: c.current_price, change24h: c.price_change_percentage_24h, volume: c.total_volume, market_cap: c.market_cap }));
+            } catch(e) { console.warn(e); return []; }
+        }
+        
+        async function fetchFearGreed() {
+            try {
+                const res = await fetch("https://api.alternative.me/fng/?limit=1");
+                const data = await res.json();
+                if(data.data && data.data[0]) return { value: data.data[0].value, classification: data.data[0].value_classification };
+                return null;
+            } catch(e) { return null; }
+        }
+        
+        async function fetchGlobalVolume() {
+            try {
+                const res = await fetch(`${COINGECKO_BASE}/global`);
+                const data = await res.json();
+                const totalVolume = data.data?.total_volume?.usd;
+                return totalVolume;
+            } catch(e) { return null; }
+        }
+        
+        async function fetchTrendingCoins() {
+            try {
+                const res = await fetch(`${COINGECKO_BASE}/search/trending`);
+                const data = await res.json();
+                return data.coins.slice(0, 6).map(item => ({ name: item.item.name, symbol: item.item.symbol, thumb: item.item.thumb }));
+            } catch(e) { return []; }
+        }
+        
+        async function getAllMarketDataForScan(limit = 80) {
+            try {
+                const url = `${COINGECKO_BASE}/coins/markets?vs_currency=usd&order=volume_desc&per_page=${limit}&page=1`;
+                const res = await fetch(url);
+                return await res.json();
+            } catch(e) { return []; }
+        }
+        
+        return { fetchTopCoins, fetchFearGreed, fetchGlobalVolume, fetchTrendingCoins, getAllMarketDataForScan };
+    })();
+
+    // ----------------------------- settings.js (localStorage & configs) ----------------------------
+    window.HELAYO_SETTINGS = (function() {
+        const DEFAULTS = {
+            radar: { minChangePercent: 8, minVolumeUsd: 5000000, scanIntervalMin: 5 },
+            indicators: { rsiPeriod: 14, emaShort: 9, emaLong: 21, macdFast: 12, macdSlow: 26 },
+            patterns: { enabledPatterns: ["bullish engulfing", "hammer"] }, 
+            telegram: { botToken: "", chatId: "" },
+            app: { autoScanActive: false, theme: "light" }  // tambahan theme
+        };
+        
+        function load() {
+            const stored = localStorage.getItem("helayo_config");
+            if(stored) return { ...DEFAULTS, ...JSON.parse(stored) };
+            return JSON.parse(JSON.stringify(DEFAULTS));
+        }
+        
+        function save(config) {
+            localStorage.setItem("helayo_config", JSON.stringify(config));
+        }
+        
+        function updateRadar(radarObj) { let cfg = load(); cfg.radar = {...cfg.radar, ...radarObj}; save(cfg); return cfg; }
+        function updateIndicators(indObj) { let cfg = load(); cfg.indicators = {...cfg.indicators, ...indObj}; save(cfg); return cfg; }
+        function updatePatterns(patterns) { let cfg = load(); cfg.patterns = {...cfg.patterns, ...patterns}; save(cfg); return cfg; }
+        function updateTelegram(tele) { let cfg = load(); cfg.telegram = {...cfg.telegram, ...tele}; save(cfg); return cfg; }
+        function updateApp(app) { let cfg = load(); cfg.app = {...cfg.app, ...app}; save(cfg); return cfg; }
+        
+        return { load, save, updateRadar, updateIndicators, updatePatterns, updateTelegram, updateApp };
+    })();
+
+    // ----------------------------- theme.js (Dark/Light) ----------------------------
+    window.HELAYO_THEME = (function() {
+        function applyTheme(theme) {
+            if(theme === 'dark') {
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+            }
+            // simpan ke config
+            const cfg = HELAYO_SETTINGS.load();
+            if(cfg.app.theme !== theme) {
+                HELAYO_SETTINGS.updateApp({ theme: theme });
+            }
+        }
+        
+        function initTheme() {
+            const cfg = HELAYO_SETTINGS.load();
+            const savedTheme = cfg.app.theme || 'light';
+            applyTheme(savedTheme);
+            // jika ada toggle di UI, sinkronkan nanti
+        }
+        
+        function toggleTheme() {
+            const isDark = document.body.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+        
+        return { initTheme, applyTheme, toggleTheme };
+    })();
+
+    // ----------------------------- telegram.js (kirim pesan) ----------------------------
+    window.HELAYO_TG = (function() {
+        async function sendMessage(message) {
+            const config = HELAYO_SETTINGS.load();
+            const { botToken, chatId } = config.telegram;
+            if(!botToken || !chatId) return { success: false, error: "Token atau Chat ID belum diisi." };
+            try {
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "HTML" })
+                });
+                const data = await res.json();
+                if(data.ok) return { success: true };
+                else return { success: false, error: data.description };
+            } catch(e) { return { success: false, error: e.message }; }
+        }
+        return { sendMessage };
+    })();
+
+    // ----------------------------- scanner.js (deteksi sinyal pump) ----------------------------
+    window.HELAYO_SCANNER = (function() {
+        let lastSignalsSent = new Set();
+        function resetSignalHistory() { lastSignalsSent.clear(); }
+        
+        async function scanForPumps() {
+            const config = HELAYO_SETTINGS.load();
+            const { minChangePercent, minVolumeUsd } = config.radar;
+            const markets = await HELAYO_API.getAllMarketDataForScan(100);
+            if(!markets.length) return [];
+            const candidates = markets.filter(coin => {
+                const change = coin.price_change_percentage_24h;
+                const volume = coin.total_volume;
+                return change && change >= minChangePercent && volume >= minVolumeUsd && coin.current_price > 0;
+            });
+            const enriched = candidates.map(c => ({ 
+                ...c, 
+                score: c.price_change_percentage_24h * 1.2 + (c.total_volume / 1e6) * 0.1,
+                reason: `Perubahan ${c.price_change_percentage_24h.toFixed(1)}% | Volume $${(c.total_volume/1e6).toFixed(0)}M`
+            }));
+            enriched.sort((a,b) => b.score - a.score);
+            return enriched.slice(0, 5);
+        }
+        
+        async function executeScanAndNotify(manual = false) {
+            const config = HELAYO_SETTINGS.load();
+            const pumps = await scanForPumps();
+            const resultsDiv = document.getElementById("pumpResults");
+            if(resultsDiv) {
+                if(pumps.length === 0) resultsDiv.innerHTML = "✅ Tidak ada koin memenuhi kriteria radar saat ini.";
+                else {
+                    let html = `<strong>🚀 Potensi Pump (${pumps.length} sinyal):</strong><ul style="margin-top:8px;">`;
+                    pumps.forEach(p => {
+                        html += `<li>${p.name} (${p.symbol.toUpperCase()}) : +${p.price_change_percentage_24h.toFixed(2)}% | Volume besar | Score ${p.score.toFixed(1)}</li>`;
+                    });
+                    html += `</ul><small>⏱️ ${new Date().toLocaleTimeString()}</small>`;
+                    resultsDiv.innerHTML = html;
+                }
+            }
+            const autoActive = config.app.autoScanActive;
+            if(autoActive || manual) {
+                if(pumps.length > 0) {
+                    const tgMsg = `🔔 *HELAYO SIGNAL PUMP DETECTED* 🔔\n\n${pumps.map(p => `${p.name} (${p.symbol.toUpperCase()}) : ${p.price_change_percentage_24h.toFixed(1)}% | Volume tinggi`).join("\n")}\n\n#crypto #pump`;
+                    const tgResult = await HELAYO_TG.sendMessage(tgMsg);
+                    if(tgResult.success && (autoActive || manual)) showToast("📨 Sinyal dikirim ke Telegram!");
+                    else if(!tgResult.success && tgResult.error) console.warn("TG error", tgResult.error);
+                } else if(manual) showToast("Scan selesai, tidak ada sinyal pump baru.");
+            }
+            return pumps;
+        }
+        
+        return { executeScanAndNotify, resetSignalHistory };
+    })();
+
+    // ----------------------------- ui.js & main control (render beranda & panel) ----------------------------
+    let currentView = "beranda";
+    let autoInterval = null;
+    
+    function showToast(msg) {
+        let toast = document.createElement("div");
+        toast.className = "toast-msg";
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    async function loadBerandaData() {
+        const coins = await HELAYO_API.fetchTopCoins(12);
+        const rankDiv = document.getElementById("rankList");
+        if(rankDiv && coins.length) {
+            rankDiv.innerHTML = coins.map(c => `<div class="coin-row"><span><b>${c.symbol}</b> ${c.name.slice(0,12)}</span><span>$${c.price?.toLocaleString() ?? 0} <span style="color:${c.change24h>0?'#10b981':'#ef4444'}">${c.change24h?.toFixed(2)??0}%</span></span></div>`).join("");
+        } else if(rankDiv) rankDiv.innerHTML = "Gagal memuat data";
+        
+        const fg = await HELAYO_API.fetchFearGreed();
+        const fngDiv = document.getElementById("fngDisplay");
+        const fngTextDiv = document.getElementById("fngText");
+        if(fg && fngDiv) {
+            fngDiv.innerText = fg.value;
+            fngTextDiv.innerText = fg.classification;
+            fngDiv.style.color = fg.value > 65 ? "#f59e0b" : (fg.value < 35 ? "#ef4444" : "#3b82f6");
+        } else { if(fngDiv) fngDiv.innerText = "N/A"; }
+        
+        const vol = await HELAYO_API.fetchGlobalVolume();
+        const volDiv = document.getElementById("globalVolume");
+        if(vol && volDiv) volDiv.innerText = `$${(vol/1e9).toFixed(2)}B`;
+        else if(volDiv) volDiv.innerText = "$--";
+        
+        const trending = await HELAYO_API.fetchTrendingCoins();
+        const trendingDiv = document.getElementById("trendingList");
+        if(trendingDiv && trending.length) {
+            trendingDiv.innerHTML = trending.map(t => `<div class="coin-row"><span>🔥 ${t.name} (${t.symbol.toUpperCase()})</span><span>⭐</span></div>`).join("");
+        } else trendingDiv.innerHTML = "Tidak ada trending";
+    }
+    
+    function renderSettingRadar() {
+        const cfg = HELAYO_SETTINGS.load();
+        return `<div class="card"><h3><i class="fas fa-radar"></i> Setting Radar Scanner</h3>
+            <div class="setting-group"><label>Minimal % Change (Pump threshold)</label><input type="number" id="minChange" value="${cfg.radar.minChangePercent}" step="1"></div>
+            <div class="setting-group"><label>Minimal Volume USD</label><input type="number" id="minVolume" value="${cfg.radar.minVolumeUsd}" step="1000000"></div>
+            <div class="setting-group"><label>Interval Auto-Scan (menit)</label><input type="number" id="scanInterval" value="${cfg.radar.scanIntervalMin}" step="1"></div>
+            <button id="saveRadarBtn">Simpan Radar</button>
+        </div>`;
+    }
+    
+    function renderIndikator() {
+        const cfg = HELAYO_SETTINGS.load();
+        return `<div class="card"><h3><i class="fas fa-chart-line"></i> Setting RSI, EMA, MACD (simulasi scoring)</h3>
+            <div class="setting-group"><label>Periode RSI (dummy)</label><input id="rsiPeriod" value="${cfg.indicators.rsiPeriod}"></div>
+            <div class="setting-group"><label>EMA Short/Long</label><input id="emaShort" value="${cfg.indicators.emaShort}"> / <input id="emaLong" value="${cfg.indicators.emaLong}"></div>
+            <div class="setting-group"><label>MACD Fast/Slow</label><input id="macdFast" value="${cfg.indicators.macdFast}"> / <input id="macdSlow" value="${cfg.indicators.macdSlow}"></div>
+            <button id="saveIndicatorsBtn">Simpan Indikator</button><p style="font-size:12px; margin-top:10px;">*Digunakan dalam perhitungan skor sinyal</p>
+        </div>`;
+    }
+    
+    function renderCandlestickPattern() {
+        const cfg = HELAYO_SETTINGS.load();
+        const patterns = cfg.patterns.enabledPatterns;
+        return `<div class="card"><h3><i class="fas fa-candlestick-chart"></i> Pola Candlestick Bullish</h3>
+            <label><input type="checkbox" id="patternBullEngulf" ${patterns.includes('bullish engulfing')?'checked':''}> Bullish Engulfing</label><br>
+            <label><input type="checkbox" id="patternHammer" ${patterns.includes('hammer')?'checked':''}> Hammer</label><br>
+            <label><input type="checkbox" id="patternMorningStar" ${patterns.includes('morning star')?'checked':''}> Morning Star</label><br>
+            <button id="savePatternsBtn" style="margin-top:16px;">Simpan Pola</button>
+        </div>`;
+    }
+    
+    function renderTelegramSetup() {
+        const cfg = HELAYO_SETTINGS.load();
+        return `<div class="card"><h3><i class="fab fa-telegram"></i> Bot Telegram</h3>
+            <div class="setting-group"><label>Bot Token</label><input type="password" id="botToken" value="${cfg.telegram.botToken}" placeholder="123456:ABC-DEF"></div>
+            <div class="setting-group"><label>Chat ID</label><input id="chatId" value="${cfg.telegram.chatId}" placeholder="123456789"></div>
+            <button id="testTelegramBtn" class="secondary">Test Kirim Pesan</button>
+            <button id="saveTelegramBtn">Simpan & Hubungkan</button>
+            <div id="tgTestResult" style="margin-top:12px;"></div>
+        </div>`;
+    }
+    
+    function renderPengaturan() {
+        const cfg = HELAYO_SETTINGS.load();
+        const isDark = (cfg.app.theme === 'dark');
+        return `<div class="card"><h3><i class="fas fa-sliders-h"></i> Pengaturan Aplikasi</h3>
+            <div class="theme-switch-wrapper">
+                <span class="theme-label"><i class="fas fa-sun"></i> Mode Terang / Gelap</span>
+                <label class="switch">
+                    <input type="checkbox" id="themeToggle" ${isDark ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <label><input type="checkbox" id="autoScanToggle" ${cfg.app.autoScanActive ? 'checked' : ''}> Aktifkan Auto Scanner (kirim sinyal ke Telegram)</label><br>
+            <div class="setting-group"><label>Refresh data otomatis (detik) [300 default]</label><input id="refreshInterval" value="300"></div>
+            <button id="saveAppSettingsBtn">Simpan</button><button id="manualScanFromSettings" class="secondary" style="margin-left:10px;">Scan Sekarang</button>
+            <p style="margin-top:14px; font-size:12px;">*Auto-scan akan memeriksa setiap X menit sesuai radar interval</p>
+        </div>`;
+    }
+    
+    function showPanel(panelId) {
+        const berandaDiv = document.getElementById("berandaView");
+        const dynamicDiv = document.getElementById("dynamicPanel");
+        if(panelId === "beranda") {
+            berandaDiv.style.display = "block";
+            dynamicDiv.style.display = "none";
+            loadBerandaData();
+        } else {
+            berandaDiv.style.display = "none";
+            dynamicDiv.style.display = "block";
+            let content = "";
+            if(panelId === "radar") content = renderSettingRadar();
+            else if(panelId === "indikator") content = renderIndikator();
+            else if(panelId === "candlestick") content = renderCandlestickPattern();
+            else if(panelId === "telegram") content = renderTelegramSetup();
+            else if(panelId === "pengaturan") content = renderPengaturan();
+            dynamicDiv.innerHTML = content;
+            attachPanelEvents(panelId);
+        }
+    }
+    
+    function attachPanelEvents(panelId) {
+        if(panelId === "radar") {
+            document.getElementById("saveRadarBtn")?.addEventListener("click", () => {
+                const minChange = parseFloat(document.getElementById("minChange").value);
+                const minVolume = parseFloat(document.getElementById("minVolume").value);
+                const scanInt = parseInt(document.getElementById("scanInterval").value);
+                HELAYO_SETTINGS.updateRadar({ minChangePercent: minChange, minVolumeUsd: minVolume, scanIntervalMin: scanInt });
+                showToast("Pengaturan radar tersimpan");
+                restartAutoScanner();
+            });
+        }
+        if(panelId === "indikator") {
+            document.getElementById("saveIndicatorsBtn")?.addEventListener("click", () => {
+                HELAYO_SETTINGS.updateIndicators({ rsiPeriod: parseInt(document.getElementById("rsiPeriod").value), emaShort: parseInt(document.getElementById("emaShort").value), emaLong: parseInt(document.getElementById("emaLong").value), macdFast: parseInt(document.getElementById("macdFast").value), macdSlow: parseInt(document.getElementById("macdSlow").value) });
+                showToast("Indikator tersimpan");
+            });
+        }
+        if(panelId === "candlestick") {
+            document.getElementById("savePatternsBtn")?.addEventListener("click", () => {
+                let arr = [];
+                if(document.getElementById("patternBullEngulf")?.checked) arr.push("bullish engulfing");
+                if(document.getElementById("patternHammer")?.checked) arr.push("hammer");
+                if(document.getElementById("patternMorningStar")?.checked) arr.push("morning star");
+                HELAYO_SETTINGS.updatePatterns({ enabledPatterns: arr });
+                showToast("Pola candlestick disimpan");
+            });
+        }
+        if(panelId === "telegram") {
+            document.getElementById("saveTelegramBtn")?.addEventListener("click", () => {
+                HELAYO_SETTINGS.updateTelegram({ botToken: document.getElementById("botToken").value, chatId: document.getElementById("chatId").value });
+                showToast("Bot Telegram tersimpan");
+            });
+            document.getElementById("testTelegramBtn")?.addEventListener("click", async () => {
+                const token = document.getElementById("botToken").value;
+                const cid = document.getElementById("chatId").value;
+                if(!token || !cid) { showToast("Isi token & chat ID dulu"); return; }
+                const res = await HELAYO_TG.sendMessage("✅ Test koneksi dari HELAYO App!");
+                const tgDiv = document.getElementById("tgTestResult");
+                if(res.success) tgDiv.innerHTML = "<span style='color:green'>Berhasil! Pesan terkirim.</span>";
+                else tgDiv.innerHTML = `<span style='color:red'>Gagal: ${res.error}</span>`;
+            });
+        }
+        if(panelId === "pengaturan") {
+            // Theme toggle listener
+            const themeToggle = document.getElementById("themeToggle");
+            if(themeToggle) {
+                themeToggle.addEventListener("change", (e) => {
+                    const newTheme = e.target.checked ? "dark" : "light";
+                    HELAYO_THEME.applyTheme(newTheme);
+                    showToast(`Mode ${newTheme === 'dark' ? 'Gelap' : 'Terang'} aktif`);
+                });
+            }
+            document.getElementById("saveAppSettingsBtn")?.addEventListener("click", () => {
+                const autoActive = document.getElementById("autoScanToggle").checked;
+                HELAYO_SETTINGS.updateApp({ autoScanActive: autoActive });
+                restartAutoScanner();
+                showToast("Pengaturan aplikasi disimpan");
+            });
+            document.getElementById("manualScanFromSettings")?.addEventListener("click", async () => {
+                await HELAYO_SCANNER.executeScanAndNotify(true);
+            });
+        }
+    }
+    
+    function startAutoScanning() {
+        if(autoInterval) clearInterval(autoInterval);
+        const config = HELAYO_SETTINGS.load();
+        if(!config.app.autoScanActive) {
+            const statusSpan = document.getElementById("autoScanStatus");
+            if(statusSpan) statusSpan.innerHTML = "⚙️ Auto-scan: OFF";
+            return;
+        }
+        const intervalMinutes = Math.max(1, config.radar.scanIntervalMin);
+        autoInterval = setInterval(async () => {
+            await HELAYO_SCANNER.executeScanAndNotify(false);
+        }, intervalMinutes * 60 * 1000);
+        const statusSpan = document.getElementById("autoScanStatus");
+        if(statusSpan) statusSpan.innerHTML = `🟢 Auto-scan aktif (setiap ${intervalMinutes} menit)`;
+    }
+    
+    function restartAutoScanner() { startAutoScanning(); }
+    
+    // sidebar nav & init
+    document.addEventListener("DOMContentLoaded", async () => {
+        HELAYO_THEME.initTheme();  // terapkan tema tersimpan
+        
+        const menuBtn = document.getElementById("menuToggle");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+        function closeSidebar() { sidebar.classList.remove("open"); overlay.classList.remove("active"); }
+        menuBtn.onclick = () => { sidebar.classList.add("open"); overlay.classList.add("active"); };
+        overlay.onclick = closeSidebar;
+        document.querySelectorAll(".sidebar-item").forEach(item => {
+            item.addEventListener("click", (e) => {
+                const nav = item.getAttribute("data-nav");
+                currentView = nav;
+                document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
+                item.classList.add("active");
+                showPanel(nav);
+                closeSidebar();
+            });
+        });
+        document.getElementById("scanNowBtn")?.addEventListener("click", async () => {
+            await HELAYO_SCANNER.executeScanAndNotify(true);
+        });
+        await loadBerandaData();
+        startAutoScanning();
+        setInterval(() => { if(currentView === "beranda") loadBerandaData(); }, 120000);
+    });
+    window.HELAYO_SCANNER.resetSignalHistory();
+</script>
 </body>
-</html>
+    </html>
