@@ -1,55 +1,28 @@
-async function updateUI() {
-    const listDiv = document.getElementById('crypto-list');
-    // Jika masih ada tulisan memuat, hapus dulu
-    if (listDiv.innerHTML.includes('Memuat data')) {
-        listDiv.innerHTML = '';
-    }
-    
-    // ... (sisanya kode yang sebelumnya)
-}
-
-
-
 const daftarKoin = ['btc_idr', 'eth_idr', 'doge_idr', 'sol_idr', 'xrp_idr', 'ltc_idr', 'arb_idr'];
 
 async function updateUI() {
+    console.log("Mulai update...");
     const listDiv = document.getElementById('crypto-list');
-    
-    // BAGIAN INI UNTUK MENGHAPUS TULISAN "MEMUAT DATA"
-    if (listDiv.innerHTML.includes('Memuat data')) {
-        listDiv.innerHTML = '';
-    }
+    listDiv.innerHTML = 'Sedang mengambil data...'; 
 
+    let html = '';
     for (const pair of daftarKoin) {
-        const data = await getIndodaxTicker(pair);
-        if (data) {
-            const harga = parseInt(data.last);
+        try {
+            // Kita coba fetch langsung di sini supaya yakin
+            const response = await fetch(`https://indodax.com/api/ticker/${pair}?t=${Date.now()}`);
+            const json = await response.json();
+            const harga = parseInt(json.ticker.last);
             const nama = pair.split('_')[0].toUpperCase();
             
-            let row = document.getElementById('row-' + pair);
-            if (!row) {
-                row = document.createElement('div');
-                row.id = 'row-' + pair;
-                row.style = "display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333;";
-                listDiv.appendChild(row);
-            }
-            
-            const hargaLama = sessionStorage.getItem('price-' + pair);
-            let warna = '#fff';
-            if (hargaLama) {
-                if (harga > parseInt(hargaLama)) warna = '#02c076';
-                if (harga < parseInt(hargaLama)) warna = '#cf304a';
-            }
-            
-            row.innerHTML = `
-                <span style="color: #fff; font-weight: bold;">${nama}</span>
-                <span style="color: ${warna}; font-weight: bold;">Rp ${harga.toLocaleString('id-ID')}</span>
-            `;
-            
-            sessionStorage.setItem('price-' + pair, harga);
+            html += `<div style="padding: 10px; border-bottom: 1px solid #333; color: white;">
+                        ${nama}: Rp ${harga.toLocaleString('id-ID')}
+                     </div>`;
+        } catch (e) {
+            html += `<div style="padding: 10px; color: red;">Error ${pair}</div>`;
         }
     }
+    listDiv.innerHTML = html;
 }
 
 updateUI();
-setInterval(updateUI, 7000);
+setInterval(updateUI, 10000);
