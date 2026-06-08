@@ -1,14 +1,11 @@
-// api.js
 async function getIndodaxTicker(pair) {
     try {
-        const proxyUrl = 'https://corsproxy.io/?';
-        const targetUrl = `https://indodax.com/api/${pair}/ticker`;
-        
-        const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+        // MENAMBAHKAN TIMESTAMP (?t=...) AGAR BROWSER TIDAK MENGAMBIL CACHE LAMA
+        const response = await fetch(`https://indodax.com/api/ticker/${pair}?t=${new Date().getTime()}`);
         const data = await response.json();
         return data.ticker;
     } catch (error) {
-        console.error("Gagal ambil data:", error);
+        console.error("GAGAL MENGAMBIL DATA:", error);
         return null;
     }
 }
