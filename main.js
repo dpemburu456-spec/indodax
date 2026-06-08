@@ -3,9 +3,6 @@
 // ==========================================
 const daftarKoin = ['btc_idr', 'eth_idr', 'doge_idr', 'sol_idr', 'xrp_idr', 'ltc_idr', 'arb_idr'];
 
-// SIMPAN HARGA SEBELUMNYA UNTUK PERBANDINGAN
-let hargaLama = {};
-
 // ==========================================
 // FUNGSI UTAMA UNTUK UPDATE TAMPILAN
 // ==========================================
@@ -19,15 +16,16 @@ async function updateUI() {
             const hargaSekarang = parseInt(data.last);
             const namaKoin = pair.split('_')[0].toUpperCase();
             
-            // TENTUKAN WARNA BERDASARKAN PERBANDINGAN HARGA
-            let warna = '#fff'; // Default putih
-            if (hargaLama[pair]) {
-                if (hargaSekarang > hargaLama[pair]) warna = '#02c076'; // HIJAU JIKA NAIK
-                if (hargaSekarang < hargaLama[pair]) warna = '#cf304a'; // MERAH JIKA TURUN
-            }
+            // MENGAMBIL HARGA LAMA DARI PENYIMPANAN SEMENTARA
+            const hargaLama = sessionStorage.getItem(pair) || hargaSekarang;
             
-            // UPDATE HARGA LAMA DENGAN HARGA TERKINI
-            hargaLama[pair] = hargaSekarang;
+            // TENTUKAN WARNA BERDASARKAN PERBANDINGAN
+            let warna = '#fff'; 
+            if (hargaSekarang > hargaLama) warna = '#02c076'; // HIJAU JIKA NAIK
+            if (hargaSekarang < hargaLama) warna = '#cf304a'; // MERAH JIKA TURUN
+            
+            // SIMPAN HARGA SEKARANG UNTUK PERBANDINGAN BERIKUTNYA
+            sessionStorage.setItem(pair, hargaSekarang);
 
             htmlContent += `
                 <div class="row" style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #333;">
@@ -47,4 +45,3 @@ async function updateUI() {
 // ==========================================
 updateUI();
 setInterval(updateUI, 5000);
-
