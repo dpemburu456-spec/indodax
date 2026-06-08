@@ -1,0 +1,13 @@
+/* style.css */
+:root {
+    --bg-body: #f4f6fc; --bg-surface: #ffffff; --text-primary: #1e293b;
+    --text-secondary: #334155; --border-light: #e2e8f0; --border-card: #eef2ff;
+    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.02); --header-bg: #ffffff;
+    --sidebar-bg: #ffffff; --sidebar-hover: #eef2ff; --sidebar-active-color: #2563eb;
+    --btn-primary: #2563eb; --btn-primary-hover: #1d4ed8;
+}
+body.dark { --bg-body: #0f172a; --bg-surface: #1e293b; --text-primary: #f1f5f9; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background: var(--bg-body); color: var(--text-primary); transition: background 0.2s; }
+.app-header { background: var(--header-bg); padding: 16px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border-light); }
+/* Tambahkan sisa CSS Anda yang lain di sini... */
