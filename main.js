@@ -1,13 +1,17 @@
-// main.js
-// Daftar koin yang ingin dipantau
+// ==========================================
+// DAFTAR KOIN YANG DIPANTAU
+// ==========================================
 const daftarKoin = ['btc_idr', 'eth_idr', 'doge_idr', 'sol_idr', 'xrp_idr', 'ltc_idr', 'arb_idr'];
 
+// ==========================================
+// FUNGSI UTAMA UNTUK UPDATE TAMPILAN
+// ==========================================
 async function updateUI() {
     const listDiv = document.getElementById('crypto-list');
     let htmlContent = '';
 
     for (const pair of daftarKoin) {
-        const data = await getIndodaxTicker(pair); // Memanggil api.js
+        const data = await getIndodaxTicker(pair);
         if (data) {
             const namaKoin = pair.split('_')[0].toUpperCase();
             htmlContent += `
@@ -23,6 +27,8 @@ async function updateUI() {
     listDiv.innerHTML = htmlContent;
 }
 
-// Update data setiap 5 detik
+// ==========================================
+// PEMBARUAN DATA OTOMATIS SETIAP 5 DETIK
+// ==========================================
 updateUI();
 setInterval(updateUI, 5000);
