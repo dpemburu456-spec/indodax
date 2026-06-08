@@ -16,13 +16,13 @@ async function updateUI() {
             const hargaSekarang = parseInt(data.last);
             const namaKoin = pair.split('_')[0].toUpperCase();
             
-            // MENGAMBIL HARGA LAMA DARI PENYIMPANAN SEMENTARA
-            const hargaLama = sessionStorage.getItem(pair) || hargaSekarang;
+            // MENGAMBIL DAN MENGUBAH HARGA LAMA MENJADI ANGKA
+            const hargaLama = Number(sessionStorage.getItem(pair)) || hargaSekarang;
             
-            // TENTUKAN WARNA BERDASARKAN PERBANDINGAN
+            // TENTUKAN WARNA BERDASARKAN PERBANDINGAN ANGKA
             let warna = '#fff'; 
-            if (hargaSekarang > hargaLama) warna = '#02c076'; // HIJAU JIKA NAIK
-            if (hargaSekarang < hargaLama) warna = '#cf304a'; // MERAH JIKA TURUN
+            if (hargaSekarang > hargaLama) warna = '#02c076'; // HIJAU JIKA HARGA NAIK
+            if (hargaSekarang < hargaLama) warna = '#cf304a'; // MERAH JIKA HARGA TURUN
             
             // SIMPAN HARGA SEKARANG UNTUK PERBANDINGAN BERIKUTNYA
             sessionStorage.setItem(pair, hargaSekarang);
