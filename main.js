@@ -1,31 +1,31 @@
 // ==========================================
-// FUNGSI UPDATE TAMPILAN (VERSI MOBILE FRIENDLY)
+// DAFTAR KOIN
+// ==========================================
+const daftarKoin = ['btc_idr', 'eth_idr', 'doge_idr', 'sol_idr', 'xrp_idr', 'ltc_idr', 'arb_idr'];
+
+// ==========================================
+// FUNGSI UPDATE TAMPILAN
 // ==========================================
 async function updateUI() {
     const listDiv = document.getElementById('crypto-list');
-    
-    // Hapus isi lama sebelum memasukkan yang baru
-    listDiv.innerHTML = ''; 
+    listDiv.innerHTML = ''; // Kosongkan layar
 
     for (const pair of daftarKoin) {
         const data = await getIndodaxTicker(pair);
         if (data) {
-            const hargaSekarang = parseInt(data.last);
+            const hargaSekarang = parseFloat(data.last);
+            const hargaLama = parseFloat(sessionStorage.getItem(pair) || hargaSekarang);
             const namaKoin = pair.split('_')[0].toUpperCase();
             
-            // CEK HARGA LAMA DARI SESSION STORAGE
-            let hargaLama = sessionStorage.getItem(pair);
+            // TENTUKAN WARNA
             let warna = '#fff';
+            if (hargaSekarang > hargaLama) warna = '#02c076'; // HIJAU
+            if (hargaSekarang < hargaLama) warna = '#cf304a'; // MERAH
             
-            if (hargaLama) {
-                if (hargaSekarang > parseInt(hargaLama)) warna = '#02c076'; // HIJAU
-                if (hargaSekarang < parseInt(hargaLama)) warna = '#cf304a'; // MERAH
-            }
-            
-            // SIMPAN HARGA BARU
+            // SIMPAN HARGA SEKARANG
             sessionStorage.setItem(pair, hargaSekarang);
 
-            // BUAT ELEMEN BARU
+            // TAMPILKAN
             const row = document.createElement('div');
             row.style = "display: flex; justify-content: space-between; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #333;";
             row.innerHTML = `
@@ -36,3 +36,9 @@ async function updateUI() {
         }
     }
 }
+
+// ==========================================
+// JALANKAN PEMBARUAN SETIAP 7 DETIK
+// ==========================================
+updateUI();
+setInterval(updateUI, 7000);
