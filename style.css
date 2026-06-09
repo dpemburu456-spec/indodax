@@ -1,13 +1,25 @@
-/* style.css */
-:root {
-    --bg-body: #f4f6fc; --bg-surface: #ffffff; --text-primary: #1e293b;
-    --text-secondary: #334155; --border-light: #e2e8f0; --border-card: #eef2ff;
-    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.02); --header-bg: #ffffff;
-    --sidebar-bg: #ffffff; --sidebar-hover: #eef2ff; --sidebar-active-color: #2563eb;
-    --btn-primary: #2563eb; --btn-primary-hover: #1d4ed8;
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { 
+    background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c); 
+    min-height: 100vh; padding: 0.75rem; 
+    font-family: 'Inter', sans-serif; color: #eef5ff; 
 }
-body.dark { --bg-body: #0f172a; --bg-surface: #1e293b; --text-primary: #f1f5f9; }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { background: var(--bg-body); color: var(--text-primary); transition: background 0.2s; }
-.app-header { background: var(--header-bg); padding: 16px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border-light); }
-/* Tambahkan sisa CSS Anda yang lain di sini... */
+.main-container { max-width: 600px; margin: 0 auto; }
+.glass-panel { 
+    background: rgba(12, 20, 35, 0.75); backdrop-filter: blur(10px); 
+    border-radius: 1.5rem; border: 1px solid rgba(0, 255, 255, 0.2); 
+}
+.logo { font-size: 1.8rem; font-weight: 800; text-align: center; background: linear-gradient(135deg, #aaffff, #2a9df4); -webkit-background-clip: text; color: transparent; }
+.logo span { font-size: 0.75rem; color: #6c8eff; }
+.symbol-input-group { display: flex; gap: 0.5rem; }
+.symbol-input-group input { flex: 3; background: #0a1220; border: 1px solid #2a6f9f; padding: 0.7rem 1rem; border-radius: 2rem; color: white; }
+button { background: #0f2a3f; border: 1px solid #2ad4ff; padding: 0.7rem 1rem; border-radius: 2rem; color: white; cursor: pointer; }
+.grid-2col { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1rem; }
+.info-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(100, 180, 250, 0.2); font-size: 0.9rem; }
+.pattern-chip { background: #0d1c2b; border-radius: 40px; padding: 0.4rem 0.9rem; font-size: 0.75rem; border: 1px solid #2e5570; }
+.pattern-active { border-color: #0ff; box-shadow: 0 0 5px cyan; }
+.interpretasi { font-size: 1rem; font-weight: bold; text-align: center; padding: 0.8rem; border-radius: 1.2rem; background: #0a1424; margin: 0.8rem 0; }
+.telegram-bar { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.8rem; }
+.tg-btn { flex: 2; background: #2c6e9e; border-color: #5bc0ff; }
+.live-dot { width: 8px; height: 8px; background: #0f0; border-radius: 50%; display: inline-block; animation: pulse 1s infinite; }
+@keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; text-shadow: 0 0 4px cyan; } }
