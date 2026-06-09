@@ -64,7 +64,14 @@
                     <div class="info-row"><span>📉 Psikologi Pasar:</span><span id="marketPsy">-</span></div>
                     <div class="info-row"><span>⚡ Radar Rekomendasi:</span><span id="radarCall">-</span></div>
                 </div>
-                <div class="telegram-bar">
+                <div class="glass-panel" style="padding: 1rem; margin-bottom: 1rem;">
+    <div class="card-title">⚙️ SETTINGS TELEGRAM</div>
+    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <input type="text" id="inputBotToken" placeholder="Masukkan Bot Token" style="padding: 0.5rem; border-radius: 0.5rem; background: #0a1220; color: #fff; border: 1px solid #2a6f9f;">
+        <input type="text" id="inputChatId" placeholder="Masukkan Chat ID" style="padding: 0.5rem; border-radius: 0.5rem; background: #0a1220; color: #fff; border: 1px solid #2a6f9f;">
+        <button id="saveConfigBtn" style="background: #2a6f9f; border: none; padding: 0.6rem; cursor: pointer;">💾 Simpan Konfigurasi</button>
+    </div>
+ <div class="telegram-bar">
                     <button id="sendTgBtn" class="tg-btn">📨 Kirim Sinyal ke Telegram</button>
                     <label class="auto-check">
                         <input type="checkbox" id="autoNotifyCheckbox"> Auto Alert
