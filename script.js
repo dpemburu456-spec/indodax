@@ -1,27 +1,48 @@
-const BOT_TOKEN = "8709487447:AAHjoJVmXFXW_1c4tiAJVu2GqnwFw4h4b5U";
-const CHAT_ID = "8294553147";
-let lastSentSignalHash = "", autoNotifyEnabled = false, latestSignalData = {};
+// 1. Ambil data dari LocalStorage saat load
+let savedBotToken = localStorage.getItem('tg_bot_token') || "";
+let savedChatId = localStorage.getItem('tg_chat_id') || "";
 
-async function sendTelegramMessage(message) {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: "HTML" }) });
-}
+// Isi input dengan data tersimpan jika ada
+document.getElementById('inputBotToken').value = savedBotToken;
+document.getElementById('inputChatId').value = savedChatId;
 
-// ... (Masukkan fungsi calcEMA, calcRSI, calcMACD, detectPatterns, dll dari kode asli Anda di sini) ...
-
-async function fetchAndAnalyze() {
-    // ... (Logika fetch data Binance dan pembaruan UI seperti kode asli Anda) ...
-}
-
-// Event Listeners
-document.getElementById('refreshBtn').addEventListener('click', fetchAndAnalyze);
-document.getElementById('sendTgBtn').addEventListener('click', async () => { /* Logika kirim manual */ });
-document.getElementById('autoNotifyCheckbox').addEventListener('change', (e) => { autoNotifyEnabled = e.target.checked; });
-document.getElementById('loadAllSymbolsBtn').addEventListener('click', loadAllUsdtSymbols);
-
-// Initial Load
-loadAllUsdtSymbols().then(() => {
-    document.getElementById('symbolInput').value = "BTCUSDT";
-    fetchAndAnalyze();
+// 2. Fungsi Simpan
+document.getElementById('saveConfigBtn').addEventListener('click', () => {
+    const token = document.getElementById('inputBotToken').value.trim();
+    const chat = document.getElementById('inputChatId').value.trim();
+    
+    if(!token || !chat) {
+        alert("Mohon isi Token dan Chat ID dengan benar!");
+        return;
+    }
+    
+    localStorage.setItem('tg_bot_token', token);
+    localStorage.setItem('tg_chat_id', chat);
+    
+    savedBotToken = token;
+    savedChatId = chat;
+    alert("✅ Konfigurasi tersimpan!");
 });
-setInterval(fetchAndAnalyze, 75000);
+
+// 3. Update fungsi kirim agar menggunakan data yang tersimpan secara dinamis
+async function sendTelegramMessage(message) {
+    if (!savedBotToken || !savedChatId) {
+        alert("⚠️ Konfigurasi Telegram belum diisi di menu Settings!");
+        return { ok: false };
+    }
+    
+    const url = `https://api.telegram.org/bot${savedBotToken}/sendMessage`;
+    const payload = { chat_id: savedChatId, text: message, parse_mode: "HTML" };
+    
+    try {
+        const response = await fetch(url, { 
+            method: "POST", 
+            headers: { "Content-Type": "application/json" }, 
+            body: JSON.stringify(payload) 
+        });
+        return await response.json();
+    } catch (err) {
+        console.error("Error:", err);
+        return { ok: false };
+    }
+}
